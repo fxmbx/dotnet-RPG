@@ -2,6 +2,8 @@ using System.Threading.Tasks;
 using dotnet_RPG.Data;
 using Microsoft.AspNetCore.Mvc;
 using dotnet_RPG.Dtos.Character.User;
+using dotnet_RPG.Models;
+using System.Collections.Generic;
 
 namespace dotnet_RPG.Controllers
 {
@@ -14,7 +16,7 @@ namespace dotnet_RPG.Controllers
         {
             authRepo = _authrepo;
         }
-
+        
         [HttpPost("Register")]
         public async Task<IActionResult> Register(UserRegistrationDto request){
             var repsonse = await authRepo.Register(

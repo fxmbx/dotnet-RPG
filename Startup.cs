@@ -14,6 +14,10 @@ using Microsoft.OpenApi.Models;
 using dotnet_RPG.Services;
 using dotnet_RPG.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text;
+using Microsoft.AspNetCore.Http;
 
 namespace dotnet_RPG
 {
@@ -38,6 +42,15 @@ namespace dotnet_RPG
             services.AddAutoMapper(typeof(Startup));
             services.AddScoped<ICharacter, CharacterRepo>();
             services.AddScoped<IAuthRepo, AuthRepo>();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
+                option =>{ option.TokenValidationParameters =new TokenValidationParameters{
+                  ValidateIssuerSigningKey = true,
+                  IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("AppSettings:Token").Value)),
+                  ValidateIssuer= false, 
+                  ValidateAudience = false  
+                };
+            });
+          services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,6 +66,8 @@ namespace dotnet_RPG
             // app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

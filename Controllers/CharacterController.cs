@@ -1,30 +1,44 @@
 using Microsoft.AspNetCore.Mvc;
 using dotnet_RPG.Models;
 using System.Collections.Generic;
-using System.Linq;
 using dotnet_RPG.Services;
 using System.Threading.Tasks;
 using dotnet_RPG.Dtos.Character;
-
+using Microsoft.AspNetCore.Authorization;
 namespace dotnet_RPG.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class CharacterController : ControllerBase
-    {
+    { 
         private readonly ICharacter _icharac;
         public CharacterController(ICharacter icharac)
         {
             _icharac = icharac;
         }
 
+     
         // [Route("GetAll")]
+        [AllowAnonymous]
         [HttpGet("GetAll")]
-        public async Task<IActionResult> Get()
-        {
-          return Ok(await _icharac.GetAllCharacters());
-        }
 
+        public async Task<IActionResult> Get()
+        {   
+            var response = new ServiceResponse<string>();
+            try
+            {
+             return Ok(await _icharac.GetAllCharacters( ));
+            }
+            catch (System.Exception ex)
+            {
+                
+                response.Success= false;
+                response.Meassgae = ex.Message;
+                return BadRequest(response);
+            }
+        }
+        [AllowAnonymous]
         [HttpGet("{Id}")]
         public async Task<IActionResult> GetSingle(int id){
            return Ok(await _icharac.GetCharacterById(id));

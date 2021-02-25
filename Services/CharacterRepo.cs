@@ -7,6 +7,9 @@ using AutoMapper;
 using System;
 using dotnet_RPG.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
+using System.Collections;
 
 namespace dotnet_RPG.Services
 {
@@ -14,11 +17,15 @@ namespace dotnet_RPG.Services
     {
         private readonly IMapper mapper;
         private readonly DataContext  dbContext;
-        public CharacterRepo(IMapper _mapper, DataContext _dbContext)
+        private readonly IHttpContextAccessor httpContextAccessor;
+        public CharacterRepo(IMapper _mapper, DataContext _dbContext, IHttpContextAccessor _httpContextAccessor)
         {
             mapper = _mapper;
             dbContext = _dbContext;
+            httpContextAccessor = _httpContextAccessor;
         }
+
+        private int GetUserId() => int.Parse(httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
         public  async Task<ServiceResponse<IEnumerable<GetCharacterDto>>> AddCharacter(AddCharacterDto charac)
         {
             var serviceResponse = new ServiceResponse<IEnumerable<GetCharacterDto>>();
@@ -29,20 +36,19 @@ namespace dotnet_RPG.Services
             return serviceResponse ;
         }
 
-        public async Task<ServiceResponse<IEnumerable<GetCharacterDto>>> GetAllCharacters()
+        public async Task<ServiceResponse<IEnumerable<GetCharacterDto>>> GetAllCharacters( )
         {
             var serviceResponse = new ServiceResponse<IEnumerable<GetCharacterDto>>();
-            var dbCharact = await dbContext.characters.ToListAsync();
+            var dbCharact = await dbContext.characters.Where(x=>x.users.Id == GetUserId()).ToListAsync();
             serviceResponse.Data = dbCharact.Select(c => mapper.Map<GetCharacterDto>(c));
              return serviceResponse;
         }
-
         public async Task<ServiceResponse<GetCharacterDto>> GetCharacterById(int id)
         {
             var serviceResponse = new ServiceResponse<GetCharacterDto>();
             var dbcharacter = await dbContext.characters.FirstOrDefaultAsync(c =>c.Id == id);
             serviceResponse.Data = mapper.Map<GetCharacterDto>(dbcharacter);
-
+            
              return serviceResponse;
         }
 
@@ -87,5 +93,7 @@ namespace dotnet_RPG.Services
            }
             return serviceResponse;
         }
+
+        
     }
 }

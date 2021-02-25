@@ -11,8 +11,7 @@ namespace dotnet_RPG
         {
             CreateMap<Character, GetCharacterDto>();
             CreateMap<AddCharacterDto, Character>();
-            CreateMap<UserRegistrationDto, User>();
-            CreateMap<UserLoginDto, User>();
+            
         }
     }
 }
