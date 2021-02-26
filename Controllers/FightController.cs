@@ -28,5 +28,9 @@ namespace dotnet_RPG.Controllers
             return Ok(await ifight.SkillAttack(request));
             
         }
+        [HttpPost]
+        public async Task<IActionResult> Fight(FightRequestDto request){
+            return Ok(await ifight.Fight(request));
+        }
     }
 }
