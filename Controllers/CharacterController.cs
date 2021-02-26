@@ -20,7 +20,6 @@ namespace dotnet_RPG.Controllers
 
      
         // [Route("GetAll")]
-        [AllowAnonymous]
         [HttpGet("GetAll")]
 
         public async Task<IActionResult> Get()
@@ -38,7 +37,6 @@ namespace dotnet_RPG.Controllers
                 return BadRequest(response);
             }
         }
-        [AllowAnonymous]
         [HttpGet("{Id}")]
         public async Task<IActionResult> GetSingle(int id){
            return Ok(await _icharac.GetCharacterById(id));
@@ -46,17 +44,20 @@ namespace dotnet_RPG.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> AddCharacter(AddCharacterDto charac){
           
             return Ok( await _icharac.AddCharacter(charac));
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateCharatcer(UpdateChararcterDto update)
+        [HttpPut("{Id}")]
+        public async Task<IActionResult> UpdateCharatcer(UpdateChararcterDto update, [FromRoute]int id)
         {
+             
             ServiceResponse<GetCharacterDto> response =await _icharac.UpdateCharacter(update);
+           
             if(response.Data == null){
-                return NotFound();
+                return NotFound(response);
             }
             return Ok(response);
         }

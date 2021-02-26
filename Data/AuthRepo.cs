@@ -24,12 +24,14 @@ namespace dotnet_RPG.Data
         {
             var response = new ServiceResponse<string>();
             var user = await dbcontext.users.FirstOrDefaultAsync(x =>x.Username.ToLower() == username.ToLower());
+            bool isValidPassword = BCrypt.Net.BCrypt.Verify(Password, user.Password );
+
             if(user == null){
                 response.Success = false;
-                response.Meassgae = "The Username not found";
-            }else if(!VerifyPasswordHash(Password, user.PasswordHash, user.PasswordSalt,out byte[] computedhash)){
+                response.Meassgae = "The Username or password you entered is incorrect";
+            }else if (!isValidPassword){
                 response.Success = false;
-                response.Meassgae = String.Format(" password you entered is in correct {0} and \ncomputerd hash: {1}", user.PasswordHash.ToString(), computedhash.ToString());
+                response.Meassgae = "The Username or password you entered is incorrect";
             }else{
                 response.Data = CreateToken(user);
             }
@@ -44,10 +46,8 @@ namespace dotnet_RPG.Data
                 repsonse.Meassgae = "User exist";
                 return repsonse;
             }
-            CreatePasswordHash(password,out byte[] passwordHash, out byte[] passwordSalt);
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt =passwordSalt;
-
+            user.Password = BCrypt.Net.BCrypt.HashPassword(password);
+           
             await dbcontext.users.AddAsync(user);
             await dbcontext.SaveChangesAsync();
             repsonse.Data = user.Id;
@@ -61,24 +61,24 @@ namespace dotnet_RPG.Data
             }
             return false;
         } 
-        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-        {
-                using (var hmac = new System.Security.Cryptography.HMACSHA512()){
-                    passwordSalt = hmac.Key;
-                    passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-                }
-        }
-        private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt, out byte[] computedhash){
-            using(var hmac = new System.Security.Cryptography.HMACSHA512()){
-                  computedhash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-                for(int a=0; a<computedhash.Length;a++){
-                    if(computedhash[a] != passwordHash[a]){
-                        return false;
-                    }
-                }
-                return true;
-            }
-        }
+        // private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        // {
+        //         using (var hmac = new System.Security.Cryptography.HMACSHA512()){
+        //             passwordSalt = hmac.Key;
+        //             passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+        //         }
+        // }
+        // private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt, out byte[] computedhash){
+        //     using(var hmac = new System.Security.Cryptography.HMACSHA512()){
+        //           computedhash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+        //         for(int a=0; a<computedhash.Length;a++){
+        //             if(computedhash[a] != passwordHash[a]){
+        //                 return false;
+        //             }
+        //         }
+        //         return true;
+        //     }
+        // }
         private string CreateToken(User user){
             var claims = new List<Claim>{
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),

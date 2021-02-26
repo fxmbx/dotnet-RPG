@@ -30,9 +30,11 @@ namespace dotnet_RPG.Services
         {
             var serviceResponse = new ServiceResponse<IEnumerable<GetCharacterDto>>();
             var charact = (mapper.Map<Character>(charac));
+            charact.users = await dbContext.users.FirstOrDefaultAsync(x=>x.Id == GetUserId());
+
             await dbContext.characters.AddAsync(charact);
             await dbContext.SaveChangesAsync();
-            serviceResponse.Data = (dbContext.characters.Select(c =>mapper.Map<GetCharacterDto>(c)));
+            serviceResponse.Data = (dbContext.characters.Where(x=>x.users.Id == GetUserId()).Select(c =>mapper.Map<GetCharacterDto>(c)));
             return serviceResponse ;
         }
 
@@ -46,36 +48,45 @@ namespace dotnet_RPG.Services
         public async Task<ServiceResponse<GetCharacterDto>> GetCharacterById(int id)
         {
             var serviceResponse = new ServiceResponse<GetCharacterDto>();
-            var dbcharacter = await dbContext.characters.FirstOrDefaultAsync(c =>c.Id == id);
+            var dbcharacter = await dbContext.characters.FirstOrDefaultAsync(c =>c.Id == id && c.users.Id == GetUserId());
             serviceResponse.Data = mapper.Map<GetCharacterDto>(dbcharacter);
-            
+
              return serviceResponse;
         }
 
         public async Task<ServiceResponse<GetCharacterDto>> UpdateCharacter(UpdateChararcterDto update)
         {
             var serviceResponse = new ServiceResponse<GetCharacterDto>();
-
             try
             {
-            var charact =  await dbContext.characters.FirstOrDefaultAsync(c =>c.Id == update.Id);
-            charact.Name = update.Name;
-            charact.Intelligence = update.Intelligence;
-            charact.Strength = update.Strength;
-            charact.HitPoints = update.HitPoints;
-            charact.Defense = update.Defense;
+              var charact =  await dbContext.characters.FirstOrDefaultAsync(c =>c.Id == update.Id);
 
-            dbContext.characters.Update(charact);
-            await dbContext.SaveChangesAsync();
+            if(charact.users.Id == GetUserId())
+            {
+                charact.Id = update.Id;
+                charact.Name = update.Name;
+                charact.Intelligence = update.Intelligence;
+                charact.Strength = update.Strength;
+                charact.HitPoints = update.HitPoints;
+                charact.Defense = update.Defense;
 
-            serviceResponse.Data = mapper.Map<GetCharacterDto>(charact);
+                dbContext.characters.Update(charact);
+                await dbContext.SaveChangesAsync();
+
+                serviceResponse.Data = mapper.Map<GetCharacterDto>(charact);
+
+            }else
+            {
+                serviceResponse.Success=false;
+                serviceResponse.Meassgae="Character not found";
+            }
             }
             catch(Exception e){
-            serviceResponse.Success = false;
-            serviceResponse.Meassgae = e.Message;
+                serviceResponse.Success = false;
+                serviceResponse.Meassgae = e.Message;
             }
-            return serviceResponse;
-             
+                return serviceResponse;
+
         }
 
         public async Task<ServiceResponse<IEnumerable<GetCharacterDto>>> DeleteCharacter(int id)
@@ -83,10 +94,14 @@ namespace dotnet_RPG.Services
            var serviceResponse = new ServiceResponse<IEnumerable <GetCharacterDto>> ();
            try
            {
-             var charac = await dbContext.characters.FirstAsync(c =>c.Id == id);
+             var charac = await dbContext.characters.FirstOrDefaultAsync(c =>c.Id == id && c.users.Id == GetUserId());
+             if(charac != null){
              dbContext.characters.Remove(charac);
              await dbContext.SaveChangesAsync();
-             serviceResponse.Data = ( dbContext.characters.Select(c =>mapper.Map<GetCharacterDto>(c)));
+             serviceResponse.Data = (dbContext.characters.Where(c =>c.users.Id == GetUserId()).Select(c =>mapper.Map<GetCharacterDto>(c)));
+             }
+                 serviceResponse.Success = false;
+                 serviceResponse.Meassgae = "Two things 1)No be you get Character, 2) Character no de";
            }catch (Exception ex){
                serviceResponse.Success = false;
                serviceResponse.Meassgae = ex.Message;
@@ -94,6 +109,6 @@ namespace dotnet_RPG.Services
             return serviceResponse;
         }
 
-        
+
     }
 }
