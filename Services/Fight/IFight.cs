@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using dotnet_RPG.Dtos.Character.FIght;
 using dotnet_RPG.Models;
@@ -11,5 +12,7 @@ namespace dotnet_RPG.Services.Fight
         Task<ServiceResponse<AttackResultDto>> SkillAttack(SkillAttackDto request);
 
         Task<ServiceResponse<FightResultDto>> Fight(FightRequestDto request);
+
+        Task<ServiceResponse<List<HighScoreDto>>> GetHighScore();
     }
 }

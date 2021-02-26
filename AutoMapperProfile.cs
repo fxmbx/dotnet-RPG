@@ -1,6 +1,7 @@
 using System.Linq;
 using AutoMapper;
 using dotnet_RPG.Dtos.Character;
+using dotnet_RPG.Dtos.Character.FIght;
 using dotnet_RPG.Dtos.Character.Skill;
 using dotnet_RPG.Dtos.Character.User;
 using dotnet_RPG.Dtos.Character.Weapon;
@@ -19,6 +20,8 @@ namespace dotnet_RPG
             CreateMap<AddWeaponDto, Weapon>();
 
             CreateMap<Skill, GetSkillDto>();
+
+            CreateMap<Character, HighScoreDto>();
         }
     }
 }

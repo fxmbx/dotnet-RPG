@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using dotnet_RPG.Data;
 using dotnet_RPG.Dtos.Character.FIght;
 using dotnet_RPG.Models;
@@ -12,8 +13,10 @@ namespace dotnet_RPG.Services.Fight
     public class FightRepo : IFight
     {
         private readonly DataContext dbcontext;
-        public FightRepo(DataContext _dbcontext)
+        private readonly IMapper mapper;
+        public FightRepo(DataContext _dbcontext, IMapper _mapper)
         {
+            mapper =_mapper;
             dbcontext = _dbcontext;
         }
         public async Task<ServiceResponse<FightResultDto>> Fight(FightRequestDto request)
@@ -170,5 +173,21 @@ namespace dotnet_RPG.Services.Fight
                 opponent.HitPoints -= damage;
             return damage;
         }
+
+        public async Task<ServiceResponse<List<HighScoreDto>>> GetHighScore()
+        {
+            List<Character> characters = await dbcontext.characters
+            .Where(x=>x.Fight>0)
+            .OrderByDescending(x=>x.Victories)
+            .ThenBy(x=>x.Defeats)
+            .ToListAsync();
+
+            var respone = new ServiceResponse<List<HighScoreDto>>{
+                Data = characters.Select(c => mapper.Map<HighScoreDto>(c)).ToList()
+            };
+            return respone;
+
+        }
+        
     }
 }
