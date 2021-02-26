@@ -1,15 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using dotnet_RPG.Services;
 using dotnet_RPG.Data;
@@ -20,6 +13,7 @@ using System.Text;
 using Microsoft.AspNetCore.Http;
 using dotnet_RPG.Services.Weapons;
 using dotnet_RPG.Services.CharacterSkill;
+using dotnet_RPG.Services.Fight;
 
 namespace dotnet_RPG
 {
@@ -46,6 +40,7 @@ namespace dotnet_RPG
             services.AddScoped<IAuthRepo, AuthRepo>();
             services.AddScoped<IWeapon, WeaponRepo>();
             services.AddScoped<ICharacterSkill, CharacterSkillRepo>();
+            services.AddScoped<IFight, FightRepo>();
             
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
                 option =>{ option.TokenValidationParameters =new TokenValidationParameters{
