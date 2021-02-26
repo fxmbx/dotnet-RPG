@@ -59,7 +59,7 @@ namespace dotnet_RPG.Services
             var serviceResponse = new ServiceResponse<GetCharacterDto>();
             try
             {
-              var charact =  await dbContext.characters.FirstOrDefaultAsync(c =>c.Id == update.Id);
+              var charact =  await dbContext.characters.Include(c=>c.users).FirstOrDefaultAsync(c =>c.Id == update.Id);
 
             if(charact.users.Id == GetUserId())
             {

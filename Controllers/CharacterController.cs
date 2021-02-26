@@ -50,19 +50,19 @@ namespace dotnet_RPG.Controllers
             return Ok( await _icharac.AddCharacter(charac));
         }
 
-        [HttpPut("{Id}")]
-        public async Task<IActionResult> UpdateCharatcer(UpdateChararcterDto update, [FromRoute]int id)
+        [HttpPut]
+        public async Task<IActionResult> UpdateCharatcer(UpdateChararcterDto update)
         {
-             
-            ServiceResponse<GetCharacterDto> response =await _icharac.UpdateCharacter(update);
-           
-            if(response.Data == null){
-                return NotFound(response);
+            ServiceResponse<GetCharacterDto> response = await _icharac.UpdateCharacter(update);
+
+            if (response.Data != null)
+            {
+                return Ok();
             }
-            return Ok(response);
+            return NotFound(response);
         }
 
-        
+
         [HttpDelete("{Id}")]
         public async Task<IActionResult> Delete(int id){
            ServiceResponse<IEnumerable<GetCharacterDto>> response = await _icharac.DeleteCharacter(id);

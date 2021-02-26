@@ -1,3 +1,5 @@
+using System;
+
 namespace dotnet_RPG.Models
 {
     public class Character
@@ -14,5 +16,9 @@ namespace dotnet_RPG.Models
 
         public RpgClass Class {get; set;} = RpgClass.Knigth;
         public User users { get; set; }
+
+        public Weapon weapon {get; set;}
+
+       
     }
 }

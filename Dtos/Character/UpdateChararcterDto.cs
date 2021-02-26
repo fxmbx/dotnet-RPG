@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using dotnet_RPG.Models;
 
 namespace dotnet_RPG.Dtos.Character
