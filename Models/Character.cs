@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace dotnet_RPG.Models
 {
@@ -19,6 +20,6 @@ namespace dotnet_RPG.Models
 
         public Weapon weapon {get; set;}
 
-       
+        public List<ChracterSkill> CharacterSkills {get;set;}
     }
 }

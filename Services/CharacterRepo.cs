@@ -48,7 +48,11 @@ namespace dotnet_RPG.Services
         public async Task<ServiceResponse<GetCharacterDto>> GetCharacterById(int id)
         {
             var serviceResponse = new ServiceResponse<GetCharacterDto>();
-            var dbcharacter = await dbContext.characters.FirstOrDefaultAsync(c =>c.Id == id && c.users.Id == GetUserId());
+            var dbcharacter = await dbContext.characters
+                .Include(c =>c.weapon)
+                .Include(c =>c.CharacterSkills)
+                .ThenInclude(cs => cs.skill)
+                .FirstOrDefaultAsync(c =>c.Id == id && c.users.Id == GetUserId());
             serviceResponse.Data = mapper.Map<GetCharacterDto>(dbcharacter);
 
              return serviceResponse;

@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 using dotnet_RPG.Services.Weapons;
+using dotnet_RPG.Services.CharacterSkill;
 
 namespace dotnet_RPG
 {
@@ -44,7 +45,8 @@ namespace dotnet_RPG
             services.AddScoped<ICharacter, CharacterRepo>();
             services.AddScoped<IAuthRepo, AuthRepo>();
             services.AddScoped<IWeapon, WeaponRepo>();
-
+            services.AddScoped<ICharacterSkill, CharacterSkillRepo>();
+            
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
                 option =>{ option.TokenValidationParameters =new TokenValidationParameters{
                   ValidateIssuerSigningKey = true,

@@ -47,7 +47,7 @@ namespace dotnet_RPG.Services.Weapons
                     };
                     //Or use Auto Mapper
                     // var weapon = mapper.Map<Weapon>(addWeapon);
-
+                    
                     await dbcontext.weapons.AddAsync(weapon);
                     await dbcontext.SaveChangesAsync();
                     response.Data = mapper.Map<GetCharacterDto>(_character);
