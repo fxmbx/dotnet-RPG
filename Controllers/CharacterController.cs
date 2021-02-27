@@ -9,7 +9,7 @@ namespace dotnet_RPG.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    [Authorize]
+    [Authorize(Roles ="Player,Admin")]
     public class CharacterController : ControllerBase
     { 
         private readonly ICharacter _icharac;

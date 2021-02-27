@@ -18,6 +18,8 @@ namespace dotnet_RPG.Data
        public DbSet<ChracterSkill> chracterSkills { get; set; }
        protected override void OnModelCreating(ModelBuilder modelBuilder){
            modelBuilder.Entity<ChracterSkill>().HasKey(cs=> new {cs.CharacterId, cs.SkillId});
+
+           modelBuilder.Entity<User>().Property(user => user.Role).HasDefaultValue("Player");
        }
     }
 }

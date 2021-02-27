@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace dotnet_RPG.Models
 {
@@ -13,5 +14,7 @@ namespace dotnet_RPG.Models
         public byte[] PasswordSalt { get; set; }
 
         public List<Character> characters { get; set; }
+        [Required]
+        public string Role { get; set; }
     }
 }

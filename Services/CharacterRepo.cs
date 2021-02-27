@@ -26,7 +26,8 @@ namespace dotnet_RPG.Services
         }
 
         private int GetUserId() => int.Parse(httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-        public  async Task<ServiceResponse<IEnumerable<GetCharacterDto>>> AddCharacter(AddCharacterDto charac)
+        private string GetUserRole() => httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
+         public  async Task<ServiceResponse<IEnumerable<GetCharacterDto>>> AddCharacter(AddCharacterDto charac)
         {
             var serviceResponse = new ServiceResponse<IEnumerable<GetCharacterDto>>();
             var charact = (mapper.Map<Character>(charac));
@@ -41,7 +42,11 @@ namespace dotnet_RPG.Services
         public async Task<ServiceResponse<IEnumerable<GetCharacterDto>>> GetAllCharacters( )
         {
             var serviceResponse = new ServiceResponse<IEnumerable<GetCharacterDto>>();
-            var dbCharact = await dbContext.characters.Where(x=>x.users.Id == GetUserId()).ToListAsync();
+            
+            var dbCharact = 
+                
+                GetUserRole().Equals("Admin") ? await dbContext.characters.ToListAsync() : 
+            await dbContext.characters.Where(x=>x.users.Id == GetUserId()).ToListAsync();
             serviceResponse.Data = dbCharact.Select(c => mapper.Map<GetCharacterDto>(c));
              return serviceResponse;
         }

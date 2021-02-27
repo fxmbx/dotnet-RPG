@@ -61,28 +61,11 @@ namespace dotnet_RPG.Data
             }
             return false;
         } 
-        // private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-        // {
-        //         using (var hmac = new System.Security.Cryptography.HMACSHA512()){
-        //             passwordSalt = hmac.Key;
-        //             passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-        //         }
-        // }
-        // private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt, out byte[] computedhash){
-        //     using(var hmac = new System.Security.Cryptography.HMACSHA512()){
-        //           computedhash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-        //         for(int a=0; a<computedhash.Length;a++){
-        //             if(computedhash[a] != passwordHash[a]){
-        //                 return false;
-        //             }
-        //         }
-        //         return true;
-        //     }
-        // }
         private string CreateToken(User user){
             var claims = new List<Claim>{
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Username)
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, user.Role)
             };
             var  key = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(configuration.GetSection("AppSettings:Token").Value)
